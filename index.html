@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>IRM BALAGTAS MINISTRIES</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-icon">✝</div>
+        <div>
+          <h1>IRM BALAGTAS MINISTRIES</h1>
+          <p>Church service planning</p>
+        </div>
+      </div>
+      <nav class="menu">
+        <button class="menu-item active" data-target="dashboard-section">Dashboard</button>
+        <button class="menu-item" data-target="volunteers-section">Volunteers</button>
+        <button class="menu-item" data-target="schedule-section">Schedule</button>
+      </nav>
+      <div class="sidebar-footer">
+        <button id="adminToggleBtn" class="secondary-button">Admin Login</button>
+        <button id="darkModeToggle" class="toggle-button">Dark Mode</button>
+        <button id="printSchedule" class="secondary-button">Print Schedule</button>
+        <button id="exportCSV" class="secondary-button">Export CSV</button>
+      </div>
+    </aside>
+
+    <main class="main-panel">
+      <header class="topbar">
+        <div>
+          <h2>IRM BALAGTAS MINISTRIES</h2>
+          <p>Plan worship services, assign volunteers, and track church ministry activities.</p>
+        </div>
+        <div class="topbar-tools">
+          <label class="search-field">
+            <span>Search Volunteers</span>
+            <input type="search" id="volunteerSearch" placeholder="Search by name, role, or city" />
+          </label>
+        </div>
+      </header>
+
+      <div id="adminStatusBanner" class="admin-banner hidden">
+        Admin mode enabled. <button id="logoutAdmin" class="secondary-button">Logout</button>
+      </div>
+
+      <section id="dashboard-section" class="panel active-panel">
+        <div class="panel-header">
+          <h3>Dashboard</h3>
+          <p>Overview of upcoming services, assignments, and ministry activity.</p>
+        </div>
+        <div class="cards-grid">
+          <article class="card card-primary">
+            <h4>Upcoming Services</h4>
+            <p id="upcomingServicesCount">0 events</p>
+          </article>
+          <article class="card card-secondary">
+            <h4>Assigned Volunteers</h4>
+            <p id="assignedCount">0 volunteers</p>
+          </article>
+          <article class="card card-tertiary">
+            <h4>Ministry Roles</h4>
+            <p id="roleCount">0 roles</p>
+          </article>
+          <article class="card card-quaternary">
+            <h4>Open Assignments</h4>
+            <p id="openAssignmentsCount">0 slots</p>
+          </article>
+        </div>
+
+        <div class="dashboard-grid">
+          <div class="dashboard-panel">
+            <div class="panel-title">
+              <h4>Next Assignments</h4>
+            </div>
+            <ul id="nextAssignmentsList" class="list"></ul>
+          </div>
+
+          <div class="dashboard-panel">
+            <div class="panel-title">
+              <h4>Ministry Statistics</h4>
+            </div>
+            <div class="stats-list">
+              <div><span>Worship Team</span><strong id="stats-worship">0</strong></div>
+              <div><span>Musicians</span><strong id="stats-musicians">0</strong></div>
+              <div><span>Speakers</span><strong id="stats-speakers">0</strong></div>
+              <div><span>Prayer Leaders</span><strong id="stats-prayer">0</strong></div>
+              <div><span>Multimedia</span><strong id="stats-multimedia">0</strong></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="volunteers-section" class="panel">
+        <div class="panel-header">
+          <h3>Volunteer Management</h3>
+          <p>Add, edit, delete, and search volunteer records with availability and ministry roles.</p>
+        </div>
+        <div class="section-actions">
+          <button id="addVolunteerBtn" class="primary-button admin-only">Add Volunteer</button>
+          <button id="exportVolunteersBtn" class="secondary-button admin-only">Volunteer Report</button>
+        </div>
+        <div class="table-wrap">
+          <table class="data-table" id="volunteerTable">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Role</th>
+                <th>Contact</th>
+                <th>Availability</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section id="schedule-section" class="panel">
+        <div class="panel-header">
+          <div>
+            <h3>Schedule & Assignments</h3>
+            <p>Choose a date, assign volunteers, and keep the service calendar up to date.</p>
+          </div>
+          <div class="section-actions">
+            <button id="addAssignmentBtn" class="primary-button admin-only">Create Assignment</button>
+          </div>
+        </div>
+
+        <div class="filter-row">
+          <label><span>Date</span><input type="date" id="scheduleFilterDate" /></label>
+          <label><span>Role</span>
+            <select id="scheduleFilterRole">
+              <option value="">All Roles</option>
+              <option value="Worship Team">Worship Team</option>
+              <option value="Musician">Musician</option>
+              <option value="Singer">Singer</option>
+              <option value="Usher">Usher</option>
+              <option value="Multimedia">Multimedia</option>
+              <option value="Prayer Leader">Prayer Leader</option>
+              <option value="Speaker">Speaker</option>
+            </select>
+          </label>
+          <button id="clearScheduleFilters" class="secondary-button">Clear Filters</button>
+        </div>
+
+        <div class="view-toggle">
+          <button class="toggle-button active" data-view="calendar">Calendar View</button>
+          <button class="toggle-button" data-view="table">Table View</button>
+        </div>
+
+        <div id="calendarView" class="schedule-view">
+          <div class="calendar-grid" id="calendarGrid"></div>
+        </div>
+
+        <div id="tableView" class="schedule-view hidden">
+          <div class="table-wrap">
+            <table class="data-table" id="assignmentTable">
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Event</th>
+                  <th>Role</th>
+                  <th>Volunteer</th>
+                  <th>Notes</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div id="modalOverlay" class="modal-overlay hidden"></div>
+
+  <dialog id="volunteerModal" class="modal">
+    <form method="dialog" id="volunteerForm">
+      <h3 id="volunteerModalTitle">Add Volunteer</h3>
+      <input type="hidden" id="volunteerId" />
+      <label>Name<input type="text" id="volunteerName" required /></label>
+      <label>Role
+        <select id="volunteerRole" required>
+          <option value="Worship Team">Worship Team</option>
+          <option value="Musician">Musician</option>
+          <option value="Singer">Singer</option>
+          <option value="Usher">Usher</option>
+          <option value="Multimedia">Multimedia</option>
+          <option value="Prayer Leader">Prayer Leader</option>
+          <option value="Speaker">Speaker</option>
+        </select>
+      </label>
+      <label>Contact Email<input type="email" id="volunteerEmail" required /></label>
+      <label>Phone<input type="tel" id="volunteerPhone" required /></label>
+      <label>Availability</label>
+      <div class="availability-grid" id="availabilityInputs">
+        <label><input type="checkbox" value="Sunday" />Sunday</label>
+        <label><input type="checkbox" value="Monday" />Monday</label>
+        <label><input type="checkbox" value="Tuesday" />Tuesday</label>
+        <label><input type="checkbox" value="Wednesday" />Wednesday</label>
+        <label><input type="checkbox" value="Thursday" />Thursday</label>
+        <label><input type="checkbox" value="Friday" />Friday</label>
+        <label><input type="checkbox" value="Saturday" />Saturday</label>
+      </div>
+      <menu class="modal-actions">
+        <button type="button" id="cancelVolunteer" class="secondary-button">Cancel</button>
+        <button type="submit" class="primary-button">Save Volunteer</button>
+      </menu>
+    </form>
+  </dialog>
+
+  <dialog id="assignmentModal" class="modal">
+    <form method="dialog" id="assignmentForm">
+      <h3>Create Assignment</h3>
+      <input type="hidden" id="assignmentId" />
+      <label>Date<input type="date" id="assignmentDate" required /></label>
+      <label>Event Name<input type="text" id="assignmentEvent" placeholder="Sunday Morning Service" required /></label>
+      <label>Role
+        <select id="assignmentRole" required>
+          <option value="Worship Team">Worship Team</option>
+          <option value="Musician">Musician</option>
+          <option value="Singer">Singer</option>
+          <option value="Usher">Usher</option>
+          <option value="Multimedia">Multimedia</option>
+          <option value="Prayer Leader">Prayer Leader</option>
+          <option value="Speaker">Speaker</option>
+        </select>
+      </label>
+      <label>Volunteer
+        <select id="assignmentVolunteer" required></select>
+      </label>
+      <label>Notes<textarea id="assignmentNotes" rows="3" placeholder="Additional details..."></textarea></label>
+      <div class="modal-info" id="suggestionInfo"></div>
+      <menu class="modal-actions">
+        <button type="button" id="cancelAssignment" class="secondary-button">Cancel</button>
+        <button type="submit" class="primary-button">Save Assignment</button>
+      </menu>
+    </form>
+  </dialog>
+
+  <dialog id="reportModal" class="modal">
+    <div>
+      <h3>Volunteer Report</h3>
+      <div id="reportContent" class="report-content"></div>
+      <menu class="modal-actions">
+        <button type="button" id="closeReport" class="secondary-button">Close</button>
+      </menu>
+    </div>
+  </dialog>
+
+  <dialog id="adminModal" class="modal">
+    <form method="dialog" id="adminForm">
+      <h3>Admin Login</h3>
+      <div class="modal-info">Click below to unlock editing and reporting tools.</div>
+      <menu class="modal-actions">
+        <button type="button" id="cancelAdmin" class="secondary-button">Cancel</button>
+        <button type="submit" class="primary-button">Log In</button>
+      </menu>
+    </form>
+  </dialog>
+
+  <script src="script.js" defer></script>
+</body>
+</html>
